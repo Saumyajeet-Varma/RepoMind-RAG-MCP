@@ -1,5 +1,7 @@
 from ingestion.loader import load_source
 from chunking.chunker import chunk_files
+from embeddings.embedder import generate_embeddings
+from retreival.vector_store import VectorStore
 
 if __name__ == "__main__":
 
@@ -8,13 +10,31 @@ if __name__ == "__main__":
 
     files = load_source(source_type, source_value)
 
-    print("Total files:", len(files))
-
     chunks = chunk_files(files)
 
-    print("Chunks:", len(chunks))
+    print("Total chunks:", len(chunks))
 
-    for c in chunks[:3]:
-        print("\n--- CHUNK ---")
-        print(c["file_path"])
-        print(c["content"][:200])
+    embeddings = generate_embeddings(chunks)
+
+    dim = len(embeddings[0])
+
+    vector_store = VectorStore(dim)
+
+    vector_store.add_embeddings(embeddings, chunks)
+
+    print("Vector DB created!")
+
+    query = input("\nAsk about the repo: ")
+
+    query_embedding = generate_embeddings(
+        [{"content": query}]
+    )
+
+    results = vector_store.search(query_embedding)
+
+    print("\nTop results:\n")
+
+    for r in results:
+        print(r["file_path"])
+        print(r["content"][:200])
+        print("-----")

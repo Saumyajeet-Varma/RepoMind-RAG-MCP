@@ -12,7 +12,7 @@ class VectorStore:
         self.metadata.extend(chunks)
 
     def search(self, query_embedding, k=5):
-        distances, indices = self.index.serach(query_embedding, k)
+        distances, indices = self.index.search(query_embedding, k)
         results = []
         for i in indices[0]:
             results.append(self.metadata[i])
