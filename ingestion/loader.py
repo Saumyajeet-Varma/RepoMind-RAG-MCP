@@ -1,12 +1,12 @@
-from github_loader import clone_repo
-from reader import read_codebase
-from zip_loader import extract_zip
+from ingestion.github_loader import clone_repo
+from ingestion.reader import read_codebase
+from ingestion.zip_loader import extract_zip
 
 def load_source(src_type, src_val):
 
     if(src_type == "local"):
         root_path = src_val
-    elif(src_type == "git"):
+    elif(src_type == "github"):
         root_path = clone_repo(src_val)
     elif(src_type == "zip"):
         root_path = extract_zip(src_val)

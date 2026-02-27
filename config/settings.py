@@ -13,6 +13,7 @@ IGNORE_DIRS = {
     "node_modules",
     "__pycache__",
     "venv",
+    ".venv",
     "dist",
-    "build"
+    "build",
 }
