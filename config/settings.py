@@ -5,6 +5,9 @@ load_dotenv()
 
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL")
+
 SUPPORTED_EXTENSIONS = {
     ".py",
     ".js",
