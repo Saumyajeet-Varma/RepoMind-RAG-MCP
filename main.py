@@ -1,10 +1,14 @@
+import os
 from ingestion.loader import load_source
 from chunking.chunker import chunk_files
 from embeddings.embedder import generate_embeddings
 from retreival.vector_store import VectorStore
+from query.engine import generate_answer
 
-if __name__ == "__main__":
+STORAGE_DIR = "storage"
 
+def build_index():
+    
     source_type = input("Enter source type (local/github/zip): ")
     source_value = input("Enter path or URL: ")
 
@@ -22,19 +26,35 @@ if __name__ == "__main__":
 
     vector_store.add_embeddings(embeddings, chunks)
 
-    print("Vector DB created!")
+    vector_store.save(STORAGE_DIR)
 
-    query = input("\nAsk about the repo: ")
+    print("Index built and saved!")
 
-    query_embedding = generate_embeddings(
-        [{"content": query}]
-    )
+def load_index():
 
-    results = vector_store.search(query_embedding)
+    vector_store = VectorStore(384)
 
-    print("\nTop results:\n")
+    vector_store.load(STORAGE_DIR)
 
-    for r in results:
-        print(r["file_path"])
-        print(r["content"][:200])
-        print("-----")
+    print("Index loaded!")
+
+    return vector_store
+
+if __name__ == "__main__":
+
+    if not os.path.exists("storage/faiss.index"):
+        build_index()
+
+    vector_store = load_index()
+
+    while True:
+
+        query = input("\nAsk RepoMind: ")
+
+        query_embedding = generate_embeddings([{"content": query}])
+
+        results = vector_store.search(query_embedding)
+
+        answer = generate_answer(query, results)
+
+        print("\nRepoMind:\n", answer)

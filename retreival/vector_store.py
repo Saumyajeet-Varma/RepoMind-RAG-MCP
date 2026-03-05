@@ -1,4 +1,6 @@
+import os
 import faiss
+import pickle
 import numpy as np
 
 class VectorStore:
@@ -17,3 +19,14 @@ class VectorStore:
         for i in indices[0]:
             results.append(self.metadata[i])
         return results
+    
+    def save(self, path="storage"):
+        os.makedirs(path, exist_ok=True)
+        faiss.write_index(self.index, f"{path}/faiss.index")
+        with open(f"{path}/metadata.pkl", "wb") as f:
+            pickle.dump(self.metadata, f)
+
+    def load(self, path="storage"):
+        self.index = faiss.read_index(f"{path}/faiss.index")
+        with open(f"{path}/matadata.pkl", "rb") as f:
+            self.metadata = pickle.load(f)
